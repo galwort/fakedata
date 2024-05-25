@@ -56,7 +56,6 @@ def update_firestore(topic, relevance_scores, model):
         topic_ref.set(
             {
                 "runs": 0,
-                "model": model,
                 "insert_time": current_time,
                 "modified_time": current_time,
             }
@@ -67,6 +66,7 @@ def update_firestore(topic, relevance_scores, model):
     relevance_ref = db.collection("relevance").document(relevance_id)
     relevance_data = {
         "topic": topic,
+        "model": model,
         "insert_time": current_time,
         "run": new_run,
         **relevance_scores,
