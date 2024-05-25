@@ -1,12 +1,24 @@
 from argparse import ArgumentParser
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
+from datetime import datetime
+from firebase_admin import credentials
+from firebase_admin import firestore
+from json import loads
 from openai import OpenAI
+
+import firebase_admin
 
 vault_url = "https://kv-galwort.vault.azure.net/"
 credential = DefaultAzureCredential()
 secret_client = SecretClient(vault_url=vault_url, credential=credential)
+
 client = OpenAI(api_key=secret_client.get_secret("OAIKey").value)
+
+firestore_sdk = secret_client.get_secret("FirebaseSDK").value
+cred = credentials.Certificate(loads(firestore_sdk))
+firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 
 def gen_relevance_scores(topic):
@@ -27,7 +39,8 @@ def gen_relevance_scores(topic):
         messages=messages,
     )
 
-    return response.choices[0].message.content
+    json_response = loads(response.choices[0].message.content)
+    return json_response["relevance"]
 
 
 if __name__ == "__main__":
