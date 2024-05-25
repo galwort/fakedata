@@ -32,7 +32,7 @@ def gen_relevance_scores(topic, model):
     messages.append(user_message)
 
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model=model,
         response_format={"type": "json_object"},
         messages=messages,
     )
@@ -41,7 +41,7 @@ def gen_relevance_scores(topic, model):
     return json_response["relevance"]
 
 
-def update_firestore(topic, relevance_scores):
+def update_firestore(topic, relevance_scores, model):
     topic = topic.replace(" ", "-").lower()
     topic_ref = db.collection("topics").document(topic)
     topic_doc = topic_ref.get()
@@ -54,7 +54,12 @@ def update_firestore(topic, relevance_scores):
     else:
         run = 0
         topic_ref.set(
-            {"runs": 0, "insert_time": current_time, "modified_time": current_time}
+            {
+                "runs": 0,
+                "model": model,
+                "insert_time": current_time,
+                "modified_time": current_time,
+            }
         )
 
     new_run = run + 1
@@ -76,6 +81,7 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("topic", type=str)
     args = parser.parse_args()
+    model = "gpt-4o"
 
-    relevance_scores = gen_relevance_scores(args.topic)
-    update_firestore(args.topic, relevance_scores)
+    relevance_scores = gen_relevance_scores(args.topic, model)
+    update_firestore(args.topic, relevance_scores, model)
