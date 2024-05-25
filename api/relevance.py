@@ -1,12 +1,10 @@
 from argparse import ArgumentParser
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
-from datetime import datetime
-from firebase_admin import credentials
-from firebase_admin import firestore
+from datetime import datetime, timezone
+from firebase_admin import credentials, firestore
 from json import loads
 from openai import OpenAI
-
 import firebase_admin
 
 vault_url = "https://kv-galwort.vault.azure.net/"
@@ -21,12 +19,12 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-def gen_relevance_scores(topic):
+def gen_relevance_scores(topic, model):
     system_message = (
         "You are tasked to evaluate the relevance of a given topic "
-        + "in each year from 1980 to 2020. "
-        + "Reply in JSON format with the word 'relevance' as the overall key, "
-        + "and each year as a key with a value between 0.00 and 1.00. "
+        "in each year from 1980 to 2020. "
+        "Reply in JSON format with the word 'relevance' as the overall key, "
+        "and each year as a key with a value between 0.00 and 1.00."
     )
 
     messages = [{"role": "system", "content": system_message}]
@@ -43,10 +41,41 @@ def gen_relevance_scores(topic):
     return json_response["relevance"]
 
 
+def update_firestore(topic, relevance_scores):
+    topic = topic.replace(" ", "-").lower()
+    topic_ref = db.collection("topics").document(topic)
+    topic_doc = topic_ref.get()
+
+    current_time = datetime.now(timezone.utc)
+
+    if topic_doc.exists:
+        topic_data = topic_doc.to_dict()
+        run = topic_data.get("runs", 0)
+    else:
+        run = 0
+        topic_ref.set(
+            {"runs": 0, "insert_time": current_time, "modified_time": current_time}
+        )
+
+    new_run = run + 1
+    relevance_id = f"{topic}_{new_run}"
+    relevance_ref = db.collection("relevance").document(relevance_id)
+    relevance_data = {
+        "topic": topic,
+        "insert_time": current_time,
+        "run": new_run,
+        **relevance_scores,
+    }
+
+    relevance_ref.set(relevance_data)
+
+    topic_ref.update({"runs": new_run, "modified_time": current_time})
+
+
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("topic", type=str)
     args = parser.parse_args()
 
     relevance_scores = gen_relevance_scores(args.topic)
-    print(relevance_scores)
+    update_firestore(args.topic, relevance_scores)
