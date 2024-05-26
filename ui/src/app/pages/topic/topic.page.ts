@@ -60,17 +60,33 @@ export class TopicPage implements OnInit {
           {
             label: 'Relevance',
             data: scores,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
+            borderColor: 'hsl(43, 94%, 61%)',
+            borderWidth: 6,
+            pointRadius: 0,
           },
         ],
       },
       options: {
         scales: {
+          x: {
+            ticks: {
+              color: 'white',
+              maxTicksLimit: 10,
+              font: {
+                size: 20,
+              },
+            },
+          },
           y: {
             beginAtZero: true,
-            max: 1.0,
+            ticks: {
+              display: false,
+              stepSize: 0.2,
+            },
+            grid: {
+              display: true,
+              color: 'rgba(255, 255, 255, 0.2)',
+            },
           },
         },
         plugins: {
