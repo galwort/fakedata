@@ -30,11 +30,17 @@ export class HomePage implements OnInit {
 
   startTopicRotation() {
     if (this.topics.length > 0) {
-      this.currentTopic = `${this.topics[this.currentTopicIndex]}`;
+      this.currentTopic = this.topics[this.currentTopicIndex].replace(
+        /-/g,
+        ' '
+      );
       setInterval(() => {
         this.currentTopicIndex =
           (this.currentTopicIndex + 1) % this.topics.length;
-        this.currentTopic = `${this.topics[this.currentTopicIndex]}`;
+        this.currentTopic = this.topics[this.currentTopicIndex].replace(
+          /-/g,
+          ' '
+        );
       }, 5000);
     } else {
       this.currentTopic = 'nothing... yet';
