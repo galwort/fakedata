@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 const app = initializeApp(environment.firebase);
 const db = getFirestore(app);
@@ -17,7 +18,7 @@ export class HomePage implements OnInit {
   currentTopic: string = 'nothing... yet';
   currentHue: number = 43;
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
     this.fetchTopics();
@@ -39,22 +40,24 @@ export class HomePage implements OnInit {
 
   startTopicRotation() {
     if (this.topics.length > 0) {
-      this.currentTopic = this.topics[this.currentTopicIndex].replace(
-        /-/g,
-        ' '
-      );
-      this.currentHue = Math.floor(Math.random() * 360);
+      this.updateCurrentTopic();
       setInterval(() => {
         this.currentTopicIndex =
           (this.currentTopicIndex + 1) % this.topics.length;
-        this.currentTopic = this.topics[this.currentTopicIndex].replace(
-          /-/g,
-          ' '
-        );
-        this.currentHue = Math.floor(Math.random() * 360);
+        this.updateCurrentTopic();
       }, 5000);
     } else {
       this.currentTopic = 'nothing... yet';
     }
+  }
+
+  updateCurrentTopic() {
+    this.currentTopic = this.topics[this.currentTopicIndex].replace(/-/g, ' ');
+    this.currentHue = Math.floor(Math.random() * 360);
+  }
+
+  navigateToTopic() {
+    const topicUrl = this.topics[this.currentTopicIndex];
+    this.router.navigate(['/', topicUrl]);
   }
 }

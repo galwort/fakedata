@@ -2,9 +2,13 @@
   <div class="container">
     <div class="text">
       Fake data on
-      <span class="underline" [style.--hue]="currentHue"
-        >{{ currentTopic }}</span
+      <span
+        class="underline"
+        [style.--hue]="currentHue"
+        (click)="navigateToTopic()"
       >
+        {{ currentTopic }}
+      </span>
     </div>
   </div>
 </ion-content>
