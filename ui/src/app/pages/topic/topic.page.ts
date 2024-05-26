@@ -50,51 +50,71 @@ export class TopicPage implements OnInit {
     });
 
     const relevanceChart = document.getElementById(
-      'chart'
+      'relevanceChart'
     ) as HTMLCanvasElement;
-    this.chart = new Chart('relevanceChart', {
-      type: 'line',
-      data: {
-        labels: years,
-        datasets: [
-          {
-            label: 'Relevance',
-            data: scores,
-            borderColor: 'hsl(43, 94%, 61%)',
-            borderWidth: 6,
-            pointRadius: 0,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          x: {
-            ticks: {
-              color: 'white',
-              maxTicksLimit: 10,
-              font: {
-                size: 20,
+    if (relevanceChart) {
+      this.chart = new Chart(relevanceChart, {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: 'Relevance',
+              data: scores,
+              borderColor: 'hsl(43, 94%, 61%)',
+              borderWidth: 8,
+              pointRadius: 5,
+              pointBackgroundColor: 'transparent',
+              pointBorderColor: 'transparent',
+            },
+          ],
+        },
+        options: {
+          scales: {
+            x: {
+              ticks: {
+                color: 'white',
+                maxTicksLimit: 10,
+                font: {
+                  size: 20,
+                },
+              },
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                display: false,
+                stepSize: 0.2,
+              },
+              grid: {
+                display: true,
+                color: 'rgba(255, 255, 255, 0.2)',
               },
             },
           },
-          y: {
-            beginAtZero: true,
-            ticks: {
+          plugins: {
+            legend: {
               display: false,
-              stepSize: 0.2,
             },
-            grid: {
-              display: true,
-              color: 'rgba(255, 255, 255, 0.2)',
+            tooltip: {
+              displayColors: false,
+              callbacks: {
+                title: (items) => '',
+                label: (context) => {
+                  const year = context.label;
+                  const value = context.raw as number;
+                  return `${year} - ${value * 100}%`;
+                },
+              },
+              bodyFont: {
+                size: 24,
+              },
             },
           },
         },
-        plugins: {
-          legend: {
-            display: false,
-          },
-        },
-      },
-    });
+      });
+    } else {
+      console.error('Failed to find the canvas element');
+    }
   }
 }
