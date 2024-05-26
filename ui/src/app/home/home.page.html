@@ -1,7 +1,10 @@
 <ion-content [fullscreen]="true">
   <div class="container">
     <div class="text">
-      Fake data on <span class="underline">{{ currentTopic }}</span>
+      Fake data on
+      <span class="underline" [style.--hue]="currentHue"
+        >{{ currentTopic }}</span
+      >
     </div>
   </div>
 </ion-content>

@@ -15,6 +15,7 @@ export class HomePage implements OnInit {
   topics: string[] = [];
   currentTopicIndex: number = 0;
   currentTopic: string = 'nothing... yet';
+  currentHue: number = 43;
 
   constructor() {}
 
@@ -42,6 +43,7 @@ export class HomePage implements OnInit {
         /-/g,
         ' '
       );
+      this.currentHue = Math.floor(Math.random() * 360);
       setInterval(() => {
         this.currentTopicIndex =
           (this.currentTopicIndex + 1) % this.topics.length;
@@ -49,6 +51,7 @@ export class HomePage implements OnInit {
           /-/g,
           ' '
         );
+        this.currentHue = Math.floor(Math.random() * 360);
       }, 5000);
     } else {
       this.currentTopic = 'nothing... yet';
