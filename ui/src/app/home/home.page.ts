@@ -14,7 +14,7 @@ const db = getFirestore(app);
 export class HomePage implements OnInit {
   topics: string[] = [];
   currentTopicIndex: number = 0;
-  currentTopic: string = 'Fake data on nothing... yet';
+  currentTopic: string = 'nothing... yet';
 
   constructor() {}
 
@@ -30,16 +30,14 @@ export class HomePage implements OnInit {
 
   startTopicRotation() {
     if (this.topics.length > 0) {
-      this.currentTopic = `Fake data on ${this.topics[this.currentTopicIndex]}`;
+      this.currentTopic = `${this.topics[this.currentTopicIndex]}`;
       setInterval(() => {
         this.currentTopicIndex =
           (this.currentTopicIndex + 1) % this.topics.length;
-        this.currentTopic = `Fake data on ${
-          this.topics[this.currentTopicIndex]
-        }`;
+        this.currentTopic = `${this.topics[this.currentTopicIndex]}`;
       }, 5000);
     } else {
-      this.currentTopic = 'No topics found';
+      this.currentTopic = 'nothing... yet';
     }
   }
 }
