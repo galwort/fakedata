@@ -25,7 +25,15 @@ export class HomePage implements OnInit {
   async fetchTopics() {
     const querySnapshot = await getDocs(collection(db, 'topics'));
     this.topics = querySnapshot.docs.map((doc) => doc.id);
+    this.shuffleTopics();
     this.startTopicRotation();
+  }
+
+  shuffleTopics() {
+    for (let i = this.topics.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.topics[i], this.topics[j]] = [this.topics[j], this.topics[i]];
+    }
   }
 
   startTopicRotation() {
