@@ -77,11 +77,25 @@ def update_firestore(topic, relevance_scores, model):
     topic_ref.update({"runs": new_run, "modified_time": current_time})
 
 
+def process_topics(model):
+    while True:
+        topics_query = db.collection("topics").where("runs", "<", 3).stream()
+        topics = [doc.id for doc in topics_query]
+
+        if not topics:
+            print("No more topics with fewer than 3 runs.")
+            break
+
+        for topic in topics:
+            print(f"Processing topic: {topic}")
+            relevance_scores = gen_relevance_scores(topic, model)
+            update_firestore(topic, relevance_scores, model)
+            print(f"Completed processing topic: {topic}")
+
+
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("topic", type=str)
     args = parser.parse_args()
     model = "gpt-4o"
 
-    relevance_scores = gen_relevance_scores(args.topic, model)
-    update_firestore(args.topic, relevance_scores, model)
+    process_topics(model)
