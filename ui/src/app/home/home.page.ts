@@ -14,7 +14,7 @@ const db = getFirestore(app);
 export class HomePage implements OnInit {
   topics: string[] = [];
   currentTopicIndex: number = 0;
-  currentTopic: string = 'nothing... yet';
+  currentTopic: string = 'Fake data on nothing... yet';
 
   constructor() {}
 
