@@ -103,7 +103,7 @@ export class TopicPage implements OnInit {
                 label: (context) => {
                   const year = context.label;
                   const value = context.raw as number;
-                  return `${year} - ${value * 100}%`;
+                  return `${year} - ${Math.round(value * 100)}%`;
                 },
               },
               bodyFont: {
