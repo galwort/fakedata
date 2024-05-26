@@ -35,6 +35,10 @@ export class TopicPage implements OnInit {
     });
   }
 
+  navigateToHome() {
+    window.location.href = '/';
+  }
+
   async fetchRecords() {
     const relevanceCollection = collection(db, 'relevance');
     const q = query(relevanceCollection, where('topic', '==', this.topic));
