@@ -9,12 +9,7 @@ import { TopicPageRoutingModule } from './topic-routing.module';
 import { TopicPage } from './topic.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    TopicPageRoutingModule
-  ],
-  declarations: [TopicPage]
+  imports: [CommonModule, FormsModule, IonicModule, TopicPageRoutingModule],
+  declarations: [TopicPage],
 })
 export class TopicPageModule {}
