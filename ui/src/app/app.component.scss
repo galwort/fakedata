@@ -1,0 +1,11 @@
+.sidebar {
+  position: fixed;
+  background-color: transparent;
+  z-index: 1;
+  padding: 10px;
+  padding-left: 20px;
+}
+
+ion-toolbar {
+  --background: transparent;
+}
