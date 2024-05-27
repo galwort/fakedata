@@ -58,6 +58,6 @@ export class HomePage implements OnInit {
 
   navigateToTopic() {
     const topicUrl = this.topics[this.currentTopicIndex];
-    this.router.navigate(['/', topicUrl]);
+    this.router.navigate(['/on/', topicUrl]);
   }
 }

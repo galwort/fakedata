@@ -15,11 +15,11 @@ const app = initializeApp(environment.firebase);
 const db = getFirestore(app);
 
 @Component({
-  selector: 'app-topic',
-  templateUrl: './topic.page.html',
-  styleUrls: ['./topic.page.scss'],
+  selector: 'app-on',
+  templateUrl: './on.page.html',
+  styleUrls: ['./on.page.scss'],
 })
-export class TopicPage implements OnInit {
+export class OnPage implements OnInit {
   topic!: string;
   records: any[] = [];
   chart: any;
