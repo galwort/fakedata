@@ -76,8 +76,10 @@ def gen_topics_from_news(model, num_topics=3):
         "given a list of news articles. These topics should cover "
         "a wide range of areas and be relevant to various fields "
         "over time, and not just relevant to today. They should be "
-        "universally relevant and timeless. Reply in JSON format "
-        "with the key 'new_topics' and an array of new topics."
+        "universally relevant and timeless. "
+        "The topics should be one word, or two words max. "
+        "Reply in JSON format with the key 'new_topics' "
+        "and an array of new topics."
     )
     user_message = {
         "role": "user",
