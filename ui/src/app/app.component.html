@@ -8,13 +8,17 @@
     <ion-content>
       <ion-list>
         <ion-menu-toggle auto-hide="true">
-          <ion-item button routerLink="/home">Home</ion-item>
+          <ion-item button routerLink="/" *ngIf="!isActive('/')">Home</ion-item>
         </ion-menu-toggle>
         <ion-menu-toggle auto-hide="true">
-          <ion-item button routerLink="/about">About</ion-item>
+          <ion-item button routerLink="/about" *ngIf="!isActive('/about')"
+            >About</ion-item
+          >
         </ion-menu-toggle>
         <ion-menu-toggle auto-hide="true">
-          <ion-item button routerLink="/topics">Topics</ion-item>
+          <ion-item button routerLink="/topics" *ngIf="!isActive('/topics')"
+            >Topics</ion-item
+          >
         </ion-menu-toggle>
       </ion-list>
     </ion-content>
