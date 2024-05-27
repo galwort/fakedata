@@ -70,6 +70,31 @@ def get_news_topics():
     return topics
 
 
+def gen_topics_from_news(model, num_topics=3):
+    system_message = (
+        f"You are tasked to generate {num_topics} new topics "
+        "given a list of news articles. These topics should cover "
+        "a wide range of areas and be relevant to various fields "
+        "over time, and not just relevant to today. They should be "
+        "universally relevant and timeless. Reply in JSON format "
+        "with the key 'new_topics' and an array of new topics."
+    )
+    user_message = {
+        "role": "user",
+        "content": get_news_topics(),
+    }
+
+    messages = [{"role": "system", "content": system_message}, user_message]
+    response = client.chat.completions.create(
+        model=model,
+        response_format={"type": "json_object"},
+        messages=messages,
+    )
+
+    json_response = loads(response.choices[0].message.content)
+    return json_response["new_topics"]
+
+
 def update_firestore(topic):
     topic = topic.replace(" ", "-").lower()
     topic_ref = db.collection("topics").document(topic)
@@ -92,4 +117,4 @@ def update_firestore(topic):
 
 
 if __name__ == "__main__":
-    print(get_news_topics("gpt-4o"))
+    print(gen_topics_from_news("gpt-4o"))
