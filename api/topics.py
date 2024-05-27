@@ -26,6 +26,10 @@ def gen_topics(model, num_topics=3):
     system_message = (
         "You are tasked to generate {num_topics} "
         "new topics given a list of existing topics. "
+        "These topics should cover a wide range of areas "
+        "and be relevant to various fields over time, "
+        "and not just relevant to today. They should be "
+        "universally relevant and timeless. "
         "Reply in JSON format with the key 'new_topics' "
         "and an array of new topics."
     )
@@ -67,4 +71,4 @@ def update_firestore(topic):
 
 
 if __name__ == "__main__":
-    print(gen_topics(model="gpt-4o"))
+    print(gen_topics("gpt-4o", 10))
