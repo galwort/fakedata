@@ -7,9 +7,15 @@
     </ion-header>
     <ion-content>
       <ion-list>
-        <ion-item button routerLink="/home">Home</ion-item>
-        <ion-item button routerLink="/about">About</ion-item>
-        <ion-item button routerLink="/topics">Topics</ion-item>
+        <ion-menu-toggle auto-hide="true">
+          <ion-item button routerLink="/home">Home</ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="true">
+          <ion-item button routerLink="/about">About</ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle auto-hide="true">
+          <ion-item button routerLink="/topics">Topics</ion-item>
+        </ion-menu-toggle>
       </ion-list>
     </ion-content>
   </ion-menu>
