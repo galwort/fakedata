@@ -1,10 +1,10 @@
-from argparse import ArgumentParser
 from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 from datetime import datetime, timezone
 from firebase_admin import credentials, firestore
 from json import loads, dumps
 from openai import OpenAI
+from requests import get
 import firebase_admin
 
 vault_url = "https://kv-galwort.vault.azure.net/"
@@ -18,8 +18,10 @@ cred = credentials.Certificate(loads(firestore_sdk))
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+news_key = secret_client.get_secret("NewsAPIKey").value
 
-def gen_topics(model, num_topics=3):
+
+def gen_topics_from_topics(model, num_topics=3):
     topics_ref = db.collection("topics")
     topics = [doc.id for doc in topics_ref.stream()]
 
@@ -49,6 +51,25 @@ def gen_topics(model, num_topics=3):
     return json_response["new_topics"]
 
 
+def get_news_topics():
+    news_url = f"https://newsapi.org/v2/top-headlines?country=us&apiKey={news_key}"
+    response = get(news_url)
+    news = response.json()
+    topics = ""
+    for topic in [article["title"] for article in news["articles"]]:
+        if "[Removed]" in topic:
+            continue
+
+        last_hyphen = topic.rfind(" - ")
+        if last_hyphen != -1:
+            topic = topic[:last_hyphen]
+
+        topics += topic + "\n"
+    topics = topics.rstrip("\n")
+
+    return topics
+
+
 def update_firestore(topic):
     topic = topic.replace(" ", "-").lower()
     topic_ref = db.collection("topics").document(topic)
@@ -71,4 +92,4 @@ def update_firestore(topic):
 
 
 if __name__ == "__main__":
-    print(gen_topics("gpt-4o", 10))
+    print(get_news_topics("gpt-4o"))
