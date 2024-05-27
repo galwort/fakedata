@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true">
   <div class="header">
     <img src="assets/star.svg" (click)="navigateToHome()" />
-    <span class="underline">{{topic}}</span>
+    <span class="underline" [style.--hue]="currentHue">{{topic}}</span>
   </div>
   <div class="centered-content">
     <canvas id="relevanceChart"></canvas>

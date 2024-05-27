@@ -23,6 +23,7 @@ export class TopicPage implements OnInit {
   topic!: string;
   records: any[] = [];
   chart: any;
+  currentHue: number = 43;
 
   constructor(private route: ActivatedRoute) {
     Chart.register(...registerables);
@@ -30,6 +31,7 @@ export class TopicPage implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
+      this.shuffleHue();
       this.topic = params.get('topic')!;
       this.fetchRecords().then(() => this.initializeChart());
     });
@@ -37,6 +39,10 @@ export class TopicPage implements OnInit {
 
   navigateToHome() {
     window.location.href = '/';
+  }
+
+  shuffleHue() {
+    this.currentHue = Math.floor(Math.random() * 360);
   }
 
   async fetchRecords() {
@@ -65,7 +71,7 @@ export class TopicPage implements OnInit {
             {
               label: 'Relevance',
               data: scores,
-              borderColor: 'hsl(43, 94%, 61%)',
+              borderColor: 'hsl(' + this.currentHue + ', 100%, 50%)',
               borderWidth: 8,
               pointRadius: 5,
               pointBackgroundColor: 'transparent',

@@ -28,7 +28,7 @@ ion-content {
     bottom: -10px;
     width: 100%;
     height: 10px;
-    background-color: hsl(43, 94%, 61%);
+    background-color: hsl(var(--hue, 43), 94%, 61%);
   }
 }
 
