@@ -39,10 +39,6 @@ export class OnPage implements OnInit {
     });
   }
 
-  navigateToHome() {
-    window.location.href = '/';
-  }
-
   shuffleHue() {
     this.currentHue = Math.floor(Math.random() * 360);
   }
