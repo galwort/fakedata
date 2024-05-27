@@ -1,3 +1,21 @@
 ion-toolbar {
   --background: transparent;
 }
+
+ion-menu {
+  --background: linear-gradient(to bottom right, #0b000b, #1a0023);
+}
+
+ion-content {
+  --background: transparent;
+}
+
+ion-item {
+  --background: #a695c7;
+  --color: #0b000b;
+
+  &:hover {
+    --background: hsl(43, 94%, 61%);
+    --color: #0b000b;
+  }
+}
