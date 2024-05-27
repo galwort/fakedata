@@ -20,7 +20,8 @@ const db = getFirestore(app);
   styleUrls: ['./on.page.scss'],
 })
 export class OnPage implements OnInit {
-  topic!: string;
+  topic: string = '';
+  topic_title: string = 'nothing... yet';
   records: any[] = [];
   chart: any;
   currentHue: number = 43;
@@ -33,6 +34,7 @@ export class OnPage implements OnInit {
     this.route.paramMap.subscribe((params) => {
       this.shuffleHue();
       this.topic = params.get('topic')!;
+      this.topic_title = this.topic.replace(/-/g, ' ');
       this.fetchRecords().then(() => this.initializeChart());
     });
   }
