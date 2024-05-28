@@ -15,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let topic of topics">
+          <tr *ngFor="let topic of topics" (click)="navigateToTopic(topic.id)">
             <td>{{ topic.id }}</td>
             <td>{{ topic.formattedInsertTime }}</td>
             <td>{{ topic.formattedModifiedTime }}</td>

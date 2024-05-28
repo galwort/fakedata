@@ -7,6 +7,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 const app = initializeApp(environment.firebase);
 const db = getFirestore(app);
@@ -19,7 +20,7 @@ const db = getFirestore(app);
 export class TopicsPage implements OnInit {
   topics: any[] = [];
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
     this.fetchTopics();
@@ -48,5 +49,9 @@ export class TopicsPage implements OnInit {
         formattedModifiedTime,
       };
     });
+  }
+
+  navigateToTopic(topicId: string) {
+    this.router.navigate(['/on', topicId]);
   }
 }
