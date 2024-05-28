@@ -1,4 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { environment } from 'src/environments/environment';
+
+const app = initializeApp(environment.firebase);
+const db = getFirestore(app);
 
 @Component({
   selector: 'app-topics',
@@ -6,10 +12,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./topics.page.scss'],
 })
 export class TopicsPage implements OnInit {
+  constructor() {}
 
-  constructor() { }
+  ngOnInit() {}
 
-  ngOnInit() {
+  async fetchTopics() {
+    const querySnapshot = await getDocs(collection(db, 'topics'));
   }
-
 }
