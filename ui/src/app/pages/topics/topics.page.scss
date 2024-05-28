@@ -32,26 +32,29 @@ ion-content {
   }
 }
 
+.table-wrapper {
+  padding: 0 10rem; // Add padding to the wrapper
+}
+
 .table-container {
   padding: 2rem;
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 2rem;
     th,
     td {
-      border: 1px solid #ddd;
       padding: 8px;
     }
     th {
-      background-color: #333;
+      text-align: left;
       color: white;
     }
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
+    tr {
+      border-bottom: 1px solid #ddd;
     }
     tr:hover {
-      background-color: #ddd;
+      font-weight: bold;
+      color: hsl(43, 94%, 61%);
     }
   }
 }
