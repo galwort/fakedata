@@ -12,11 +12,19 @@ const db = getFirestore(app);
   styleUrls: ['./topics.page.scss'],
 })
 export class TopicsPage implements OnInit {
+  topics: any[] = [];
+
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.fetchTopics();
+  }
 
   async fetchTopics() {
     const querySnapshot = await getDocs(collection(db, 'topics'));
+    this.topics = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
   }
 }

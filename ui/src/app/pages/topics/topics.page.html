@@ -3,4 +3,24 @@
     <img src="assets/star.svg" />
     <span class="underline">topics</span>
   </div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Topic</th>
+          <th>Created</th>
+          <th>Modified</th>
+          <th>Runs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let topic of topics">
+          <td>{{ topic.id }}</td>
+          <td>{{ topic.insert_time }}</td>
+          <td>{{ topic.modified_time }}</td>
+          <td>{{ topic.runs }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </ion-content>
