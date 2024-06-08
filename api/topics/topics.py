@@ -15,7 +15,10 @@ client = OpenAI(api_key=secret_client.get_secret("OAIKey").value)
 
 firestore_sdk = secret_client.get_secret("FirebaseSDK").value
 cred = credentials.Certificate(loads(firestore_sdk))
-firebase_admin.initialize_app(cred)
+try:
+    firebase_admin.get_app()
+except ValueError:
+    firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 news_key = secret_client.get_secret("NewsAPIKey").value
