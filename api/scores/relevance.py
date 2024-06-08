@@ -93,9 +93,5 @@ def process_topics(model):
             print(f"Completed processing topic: {topic}")
 
 
-if __name__ == "__main__":
-    parser = ArgumentParser()
-    args = parser.parse_args()
-    model = "gpt-4o"
-
-    process_topics(model)
+def main():
+    process_topics("gpt-4o")

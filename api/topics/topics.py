@@ -118,5 +118,13 @@ def update_firestore(topic):
     print(f"Topic '{topic}' has been added to Firestore.")
 
 
-if __name__ == "__main__":
-    print(gen_topics_from_news("gpt-4o"))
+def main():
+    model = "gpt-4o"
+
+    new_topics = gen_topics_from_topics(model)
+    for topic in new_topics:
+        update_firestore(topic)
+
+    news_topics = gen_topics_from_news(model)
+    for topic in news_topics:
+        update_firestore(topic)
