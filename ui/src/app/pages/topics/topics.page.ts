@@ -21,6 +21,10 @@ interface TopicRow {
   runs: number;
 }
 
+// Session cache so revisiting the page renders instantly while a fresh
+// snapshot loads in the background.
+let cachedRows: TopicRow[] | null = null;
+
 @Component({
   selector: 'app-topics',
   templateUrl: './topics.page.html',
@@ -35,12 +39,17 @@ export class TopicsPage implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit() {
+    if (cachedRows) {
+      this.topics = cachedRows;
+      this.applySort();
+      this.loaded = true;
+    }
     this.fetchTopics();
   }
 
   async fetchTopics() {
     const querySnapshot = await getDocs(collection(db, 'topics'));
-    this.topics = querySnapshot.docs.map((doc) => {
+    cachedRows = querySnapshot.docs.map((doc) => {
       const data = doc.data() as any;
       const insertTime = data['insert_time']?.toDate?.();
       const modifiedTime = data['modified_time']?.toDate?.();
@@ -55,6 +64,7 @@ export class TopicsPage implements OnInit {
         runs: data['runs'] ?? 0,
       };
     });
+    this.topics = cachedRows;
     this.applySort();
     this.loaded = true;
   }

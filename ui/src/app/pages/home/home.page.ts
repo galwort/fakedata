@@ -39,6 +39,7 @@ interface TopicCard {
 })
 export class HomePage implements OnInit, OnDestroy {
   cards: TopicCard[] = [];
+  loaded = false;
   rotation: string[] = [];
   rotationIndex = 0;
   currentTopic = '';
@@ -102,6 +103,7 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.rotation = this.shuffle(this.cards.map((c) => c.id));
     this.startTopicRotation();
+    this.loaded = true;
   }
 
   private shuffle(items: string[]): string[] {
