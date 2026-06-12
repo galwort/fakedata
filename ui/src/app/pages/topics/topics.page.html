@@ -1,28 +1,44 @@
-<ion-content [fullscreen]="true">
-  <div class="header">
-    <img src="assets/star.svg" />
-    <span class="underline">topics</span>
+<ion-content>
+  <div class="fd-page">
+    <header class="page-head">
+      <p class="fd-kicker">The Archive</p>
+      <h1 class="fd-headline headline">Every topic</h1>
+      <p class="fd-dek">
+        {{ topics.length }} subject{{ topics.length === 1 ? '' : 's' }} our
+        model has quantified with unwarranted confidence.
+      </p>
+    </header>
+
+    <table>
+      <thead>
+        <tr>
+          <th (click)="sortBy('title')">
+            Topic <span class="arrow">{{ arrowFor('title') }}</span>
+          </th>
+          <th (click)="sortBy('insertMs')">
+            Created <span class="arrow">{{ arrowFor('insertMs') }}</span>
+          </th>
+          <th (click)="sortBy('modifiedMs')">
+            Updated <span class="arrow">{{ arrowFor('modifiedMs') }}</span>
+          </th>
+          <th class="num" (click)="sortBy('runs')">
+            Runs <span class="arrow">{{ arrowFor('runs') }}</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let topic of topics" (click)="navigateToTopic(topic.id)">
+          <td class="name">
+            <span class="dot" [style.background]="topic.color"></span
+            >{{ topic.title }}
+          </td>
+          <td class="mono">{{ topic.formattedInsertTime }}</td>
+          <td class="mono">{{ topic.formattedModifiedTime }}</td>
+          <td class="mono num">{{ topic.runs }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <div class="table-wrapper">
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Topic</th>
-            <th>Created</th>
-            <th>Modified</th>
-            <th>Runs</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let topic of topics" (click)="navigateToTopic(topic.id)">
-            <td>{{ topic.id }}</td>
-            <td>{{ topic.formattedInsertTime }}</td>
-            <td>{{ topic.formattedModifiedTime }}</td>
-            <td>{{ topic.runs }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+
+  <fd-footer></fd-footer>
 </ion-content>

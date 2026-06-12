@@ -7,14 +7,18 @@ import { IonicModule } from '@ionic/angular';
 import { AboutPageRoutingModule } from './about-routing.module';
 
 import { AboutPage } from './about.page';
+import { SparkleComponent } from 'src/app/shared/sparkle.component';
+import { FooterComponent } from 'src/app/shared/footer.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    AboutPageRoutingModule
+    AboutPageRoutingModule,
+    SparkleComponent,
+    FooterComponent,
   ],
-  declarations: [AboutPage]
+  declarations: [AboutPage],
 })
 export class AboutPageModule {}

@@ -1,61 +1,89 @@
-ion-content {
-  --background: linear-gradient(to bottom right, #0b000b, #1a0023);
+.page-head {
+  padding-top: 3.5rem;
+
+  .headline {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+  }
 }
 
-.header {
-  font-size: 3rem;
-  font-weight: bold;
-  color: white;
+table {
+  width: 100%;
+  margin-top: 2.5rem;
+  border-collapse: collapse;
+}
+
+th {
+  font-family: var(--fd-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fd-gray);
   text-align: left;
-  padding: 2rem;
-  padding-left: 5rem;
+  padding: 0 0.75rem 0.6rem;
+  border-bottom: 2px solid var(--fd-ink);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
 
-  img {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-    margin-bottom: -15px;
+  &:hover {
+    color: var(--fd-ink);
+  }
+
+  .arrow {
+    display: inline-block;
+    width: 1em;
+    font-size: 0.8em;
   }
 }
 
-.underline {
-  position: relative;
+td {
+  padding: 0.85rem 0.75rem;
+  border-bottom: 1px solid var(--fd-rule);
+}
 
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -10px;
-    width: 100%;
+tbody tr {
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+
+  &:hover {
+    background-color: var(--fd-paper-soft);
+
+    .name {
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+    }
+  }
+}
+
+.name {
+  font-weight: 600;
+  text-transform: capitalize;
+
+  .dot {
+    display: inline-block;
+    width: 10px;
     height: 10px;
-    background-color: hsl(43, 94%, 61%);
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    vertical-align: baseline;
   }
 }
 
-.table-wrapper {
-  padding: 0 10rem;
+.mono {
+  font-family: var(--fd-mono);
+  font-size: 0.8125rem;
+  color: var(--fd-gray);
 }
 
-.table-container {
-  padding: 2rem;
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    th,
-    td {
-      padding: 8px;
-    }
-    th {
-      text-align: left;
-      color: white;
-    }
-    tr {
-      border-bottom: 1px solid #ddd;
-    }
-    tr:hover {
-      font-weight: bold;
-      color: hsl(43, 94%, 61%);
-      cursor: pointer;
-    }
+.num {
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  th:nth-child(2),
+  td:nth-child(2) {
+    display: none;
   }
 }

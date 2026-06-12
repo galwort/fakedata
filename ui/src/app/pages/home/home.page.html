@@ -1,15 +1,54 @@
-<ion-content [fullscreen]="true">
-  <div class="container">
-    <div class="text">
-      Fake data on
-      <span
-        class="underline"
-        [style.--hue]="currentHue"
-        (click)="navigateToTopic()"
-      >
-        {{ currentTopic }}</span
-      >
-      <img src="assets/asterisk.svg" />
+<ion-content>
+  <section class="hero">
+    <div class="fd-page">
+      <p class="fd-kicker">The Fake Data Project</p>
+      <h1 class="fd-headline headline">
+        Fake data on
+        <span
+          class="topic"
+          [class.fading]="fading"
+          [style.--c]="accent"
+          (click)="navigateToTopic()"
+          >{{ currentTopic }}</span
+        ><fd-sparkle
+          class="spark"
+          [class.fading]="fading"
+          [style.color]="accent"
+        ></fd-sparkle>
+      </h1>
+      <p class="fd-dek">
+        Serious-looking statistics about things nobody ever measured,
+        confidently reported by a large language model.
+      </p>
     </div>
-  </div>
+  </section>
+
+  <section class="latest" *ngIf="cards.length">
+    <div class="fd-page">
+      <div class="section-head">
+        <h2>The Latest</h2>
+        <a routerLink="/topics">See every topic →</a>
+      </div>
+      <div class="grid">
+        <article
+          class="card"
+          *ngFor="let t of cards"
+          [style.--c]="t.color"
+          (click)="open(t.id)"
+        >
+          <svg class="sparkline" viewBox="0 0 120 36" aria-hidden="true">
+            <polyline
+              [attr.points]="t.points"
+              vector-effect="non-scaling-stroke"
+            ></polyline>
+            <circle [attr.cx]="t.endX" [attr.cy]="t.endY" r="2.5"></circle>
+          </svg>
+          <h3>{{ t.title }}</h3>
+          <p class="meta">{{ t.meta }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <fd-footer></fd-footer>
 </ion-content>

@@ -1,9 +1,46 @@
-<ion-content [fullscreen]="true">
-  <div class="header">
-    <img src="assets/star.svg" />
-    <span class="underline" [style.--hue]="currentHue">{{topic_title}}</span>
-  </div>
-  <div class="centered-content">
-    <canvas id="relevanceChart"></canvas>
-  </div>
+<ion-content>
+  <article class="fd-page story">
+    <header>
+      <p class="fd-kicker" [style.color]="color">Fake data on</p>
+      <h1 class="fd-headline headline">{{ topic_title }}</h1>
+      <p class="fd-dek">
+        Four decades of relevance, as estimated by a large language model that
+        was never asked to cite its sources.
+      </p>
+      <p class="fd-byline">
+        By <b>A Large Language Model</b>
+        <ng-container *ngIf="updated"> · Updated {{ updated }}</ng-container>
+      </p>
+      <hr class="fd-rule" />
+    </header>
+
+    <div class="stats" *ngIf="hasData">
+      <div class="stat">
+        <span class="num">{{ peakYear }}</span>
+        <span class="label">Peak year</span>
+      </div>
+      <div class="stat">
+        <span class="num">{{ peakPct }}%</span>
+        <span class="label">Peak relevance</span>
+      </div>
+      <div class="stat">
+        <span class="num" [style.color]="color">{{ latestPct }}%</span>
+        <span class="label">In {{ lastYear }}</span>
+      </div>
+    </div>
+
+    <section class="chart-card">
+      <h2 class="chart-title">How relevant was {{ topic_title }}?</h2>
+      <p class="chart-sub">Made-up relevance score by year, 1980–2020</p>
+      <div class="chart-wrap">
+        <canvas id="relevanceChart"></canvas>
+      </div>
+      <p class="source">
+        SOURCE: {{ runs > 0 ? runs + ' RUN' + (runs === 1 ? '' : 'S') + ' OF ' :
+        '' }}AN OVERCONFIDENT LANGUAGE MODEL
+      </p>
+    </section>
+  </article>
+
+  <fd-footer></fd-footer>
 </ion-content>

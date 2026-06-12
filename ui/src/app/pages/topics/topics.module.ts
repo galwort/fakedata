@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { TopicsPageRoutingModule } from './topics-routing.module';
 
 import { TopicsPage } from './topics.page';
+import { FooterComponent } from 'src/app/shared/footer.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    TopicsPageRoutingModule
+    TopicsPageRoutingModule,
+    FooterComponent,
   ],
-  declarations: [TopicsPage]
+  declarations: [TopicsPage],
 })
 export class TopicsPageModule {}

@@ -1,12 +1,8 @@
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * FiveThirtyEight-inspired editorial theme: white paper, near-black ink,
+ * grotesque headlines, monospace numbers, and a five-color chart palette.
  */
 
 /* Core CSS required for Ionic components to work properly */
@@ -25,13 +21,100 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+body {
+  font-family: var(--fd-sans);
+  color: var(--fd-ink);
+  background: var(--fd-paper);
+}
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+::selection {
+  background: var(--fd-gold);
+  color: var(--fd-ink);
+}
+
+a {
+  color: inherit;
+}
+
+/* Layout: fixed masthead above the router outlet */
+ion-app {
+  display: flex !important;
+  flex-direction: column;
+}
+
+ion-router-outlet {
+  position: relative;
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Shared editorial pieces                                             */
+/* ------------------------------------------------------------------ */
+
+.fd-page {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.fd-kicker {
+  font-family: var(--fd-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fd-gray);
+  margin: 0 0 0.75rem;
+}
+
+.fd-headline {
+  font-family: var(--fd-sans);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--fd-ink);
+  margin: 0;
+}
+
+.fd-dek {
+  font-size: 1.125rem;
+  line-height: 1.55;
+  color: var(--fd-gray);
+  margin: 1rem 0 0;
+  max-width: 42em;
+}
+
+.fd-byline {
+  font-family: var(--fd-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fd-gray-light);
+  margin: 1.25rem 0 0;
+
+  b,
+  strong {
+    color: var(--fd-ink);
+    font-weight: 700;
+  }
+}
+
+.fd-rule {
+  border: 0;
+  border-top: 2px solid var(--fd-ink);
+  margin: 1.5rem 0 0;
+}
+
+/* The five-color signature strip */
+.fd-strip {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--fd-blue) 0 20%,
+    var(--fd-red) 20% 40%,
+    var(--fd-gold) 40% 60%,
+    var(--fd-green) 60% 80%,
+    var(--fd-purple) 80% 100%
+  );
+}

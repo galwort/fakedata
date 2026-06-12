@@ -1,2 +1,33 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
+// Fake Data design tokens — FiveThirtyEight-inspired editorial theme.
+
+:root {
+  /* Ionic base */
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255, 255, 255;
+  --ion-text-color: #1a1a1a;
+  --ion-text-color-rgb: 26, 26, 26;
+  --ion-font-family: "Libre Franklin", -apple-system, "Helvetica Neue", Arial,
+    sans-serif;
+
+  /* Ink + paper */
+  --fd-ink: #1a1a1a;
+  --fd-gray: #6f6f6f;
+  --fd-gray-light: #989898;
+  --fd-rule: #e2e2e2;
+  --fd-rule-dark: #cbcbcb;
+  --fd-paper: #ffffff;
+  --fd-paper-soft: #f7f7f7;
+
+  /* The classic chart palette */
+  --fd-blue: #008fd5;
+  --fd-red: #fc4f30;
+  --fd-gold: #e5ae38;
+  --fd-green: #6d904f;
+  --fd-purple: #810f7c;
+
+  /* Type */
+  --fd-sans: "Libre Franklin", -apple-system, "Helvetica Neue", Arial,
+    sans-serif;
+  --fd-mono: "Roboto Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+    monospace;
+}

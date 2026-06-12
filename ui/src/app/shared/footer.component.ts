@@ -1,0 +1,78 @@
+import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { SparkleComponent } from './sparkle.component';
+
+@Component({
+  selector: 'fd-footer',
+  standalone: true,
+  imports: [RouterModule, SparkleComponent],
+  template: `
+    <footer class="site-footer">
+      <div class="fd-strip"></div>
+      <div class="inner">
+        <a class="wordmark" routerLink="/">
+          data<fd-sparkle class="spark"></fd-sparkle>
+        </a>
+        <p class="line">
+          Every number on this site was made up by a large language model.
+          That&rsquo;s the point.
+        </p>
+        <p class="fine">THE FAKE DATA PROJECT</p>
+      </div>
+    </footer>
+  `,
+  styles: [
+    `
+      .site-footer {
+        margin-top: 5rem;
+        background: #1a1a1a;
+        color: #fff;
+      }
+
+      .inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 3rem;
+      }
+
+      .wordmark {
+        display: inline-flex;
+        align-items: flex-start;
+        font-weight: 900;
+        font-size: 1.5rem;
+        letter-spacing: -0.02em;
+        color: #fff;
+        text-decoration: none;
+      }
+
+      .spark {
+        font-size: 0.6em;
+        color: var(--fd-gold);
+        transform: translateY(0.1em);
+        margin-left: 0.1em;
+        transition: transform 0.35s ease;
+      }
+
+      .wordmark:hover .spark {
+        transform: translateY(0.1em) rotate(90deg);
+      }
+
+      .line {
+        margin: 1rem 0 0;
+        font-size: 0.9375rem;
+        line-height: 1.6;
+        color: #b5b5b5;
+        max-width: 36em;
+      }
+
+      .fine {
+        margin: 1.5rem 0 0;
+        font-family: var(--fd-mono);
+        font-size: 0.6875rem;
+        letter-spacing: 0.2em;
+        color: #777;
+      }
+    `,
+  ],
+})
+export class FooterComponent {}

@@ -1,48 +1,99 @@
-ion-content {
-  --background: linear-gradient(to bottom right, #0b000b, #1a0023);
-}
+.story {
+  padding-top: 3.5rem;
 
-.header {
-  font-size: 3rem;
-  font-weight: bold;
-  color: white;
-  text-align: left;
-  padding: 2rem;
-  padding-left: 5rem;
+  header .headline {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    max-width: 16em;
+  }
 
-  img {
-    width: 50px;
-    height: 50px;
-    margin-right: 10px;
-    margin-bottom: -15px;
+  header .headline::first-letter {
+    text-transform: uppercase;
   }
 }
 
-.underline {
-  position: relative;
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -10px;
-    width: 100%;
-    height: 10px;
-    background-color: hsl(var(--hue, 43), 94%, 61%);
-  }
-}
-
-.centered-content {
+.stats {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 80%;
-  padding: 50px;
-  box-sizing: border-box;
-  background-color: transparent;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+  margin-top: 2rem;
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .num {
+    font-family: var(--fd-mono);
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--fd-ink);
+  }
+
+  .label {
+    margin-top: 0.4rem;
+    font-family: var(--fd-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fd-gray-light);
+  }
 }
 
-canvas {
-  max-width: 100%;
-  max-height: 100%;
+.chart-card {
+  margin-top: 2.5rem;
+  border: 1px solid var(--fd-rule);
+  padding: 1.5rem 1.75rem 1.25rem;
+
+  .chart-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .chart-title::first-letter {
+    text-transform: uppercase;
+  }
+
+  .chart-sub {
+    margin: 0.35rem 0 0;
+    font-size: 0.9375rem;
+    color: var(--fd-gray);
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 420px;
+    margin-top: 1.25rem;
+  }
+
+  .source {
+    margin: 1.25rem 0 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--fd-rule);
+    font-family: var(--fd-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    color: var(--fd-gray-light);
+  }
+}
+
+@media (max-width: 600px) {
+  .stats {
+    gap: 1.5rem;
+
+    .num {
+      font-size: 1.75rem;
+    }
+  }
+
+  .chart-card {
+    padding: 1.1rem 1rem 1rem;
+
+    .chart-wrap {
+      height: 300px;
+    }
+  }
 }

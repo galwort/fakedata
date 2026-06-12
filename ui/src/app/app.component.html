@@ -1,39 +1,16 @@
 <ion-app>
-  <ion-menu contentId="main-content">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Menu</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <ion-list>
-        <ion-menu-toggle auto-hide="true">
-          <ion-item button routerLink="/" *ngIf="!isActive('/')">Home</ion-item>
-        </ion-menu-toggle>
-        <ion-menu-toggle auto-hide="true">
-          <ion-item button routerLink="/about" *ngIf="!isActive('/about')"
-            >About</ion-item
-          >
-        </ion-menu-toggle>
-        <ion-menu-toggle auto-hide="true">
-          <ion-item button routerLink="/topics" *ngIf="!isActive('/topics')"
-            >Topics</ion-item
-          >
-        </ion-menu-toggle>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
+  <header class="site-header">
+    <div class="inner">
+      <a class="wordmark" routerLink="/" aria-label="Fake Data home">
+        data<fd-sparkle class="spark"></fd-sparkle>
+      </a>
+      <nav>
+        <a routerLink="/topics" [class.active]="isActive('/topics')">Topics</a>
+        <a routerLink="/about" [class.active]="isActive('/about')">About</a>
+      </nav>
+    </div>
+    <div class="fd-strip"></div>
+  </header>
 
   <ion-router-outlet id="main-content"></ion-router-outlet>
-
-  <ion-content>
-    <ion-header class="ion-no-border">
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-menu-button></ion-menu-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-    <ion-router-outlet></ion-router-outlet>
-  </ion-content>
 </ion-app>
