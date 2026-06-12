@@ -8,6 +8,18 @@
       </h1>
     </header>
 
+    <div class="controls">
+      <input
+        type="search"
+        placeholder="Search topics"
+        [(ngModel)]="searchQuery"
+        (input)="updateView()"
+      />
+      <p class="result-count" *ngIf="searchQuery">
+        {{ view.length | number }} match{{ view.length === 1 ? '' : 'es' }}
+      </p>
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -23,10 +35,19 @@
           <th class="num" (click)="sortBy('runs')">
             Runs <span class="arrow">{{ arrowFor('runs') }}</span>
           </th>
+          <th class="num" (click)="sortBy('avg')">
+            Avg <span class="arrow">{{ arrowFor('avg') }}</span>
+          </th>
+          <th class="num" (click)="sortBy('peak')">
+            Peak <span class="arrow">{{ arrowFor('peak') }}</span>
+          </th>
+          <th class="num" (click)="sortBy('peakYear')">
+            Peak year <span class="arrow">{{ arrowFor('peakYear') }}</span>
+          </th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let topic of topics" (click)="navigateToTopic(topic.id)">
+        <tr *ngFor="let topic of view" (click)="navigateToTopic(topic.id)">
           <td class="name">
             <span class="dot" [style.background]="topic.color"></span
             >{{ topic.title }}
@@ -34,9 +55,14 @@
           <td class="mono">{{ topic.formattedInsertTime }}</td>
           <td class="mono">{{ topic.formattedModifiedTime }}</td>
           <td class="mono num">{{ topic.runs }}</td>
+          <td class="mono num">{{ topic.avgDisplay }}</td>
+          <td class="mono num">{{ topic.peakDisplay }}</td>
+          <td class="mono num">{{ topic.peakYearDisplay }}</td>
         </tr>
       </tbody>
     </table>
+
+    <p class="empty" *ngIf="!view.length">No topics match your search.</p>
   </div>
 
   <fd-footer *ngIf="loaded"></fd-footer>

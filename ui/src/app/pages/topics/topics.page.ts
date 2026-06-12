@@ -4,11 +4,19 @@ import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import { colorFor, topicTitle } from 'src/app/shared/palette';
+import { FIRST_YEAR, seriesFor } from 'src/app/shared/trends';
 
 const app = getApps().length ? getApp() : initializeApp(environment.firebase);
 const db = getFirestore(app);
 
-type SortField = 'title' | 'insertMs' | 'modifiedMs' | 'runs';
+type SortField =
+  | 'title'
+  | 'insertMs'
+  | 'modifiedMs'
+  | 'runs'
+  | 'avg'
+  | 'peak'
+  | 'peakYear';
 
 interface TopicRow {
   id: string;
@@ -19,6 +27,13 @@ interface TopicRow {
   insertMs: number;
   modifiedMs: number;
   runs: number;
+  hasData: boolean;
+  avg: number;
+  peak: number;
+  peakYear: number;
+  avgDisplay: string;
+  peakDisplay: string;
+  peakYearDisplay: string;
 }
 
 // Session cache so revisiting the page renders instantly while a fresh
@@ -32,6 +47,8 @@ let cachedRows: TopicRow[] | null = null;
 })
 export class TopicsPage implements OnInit {
   topics: TopicRow[] = [];
+  view: TopicRow[] = [];
+  searchQuery = '';
   loaded = false;
   sortField: SortField = 'modifiedMs';
   sortAsc = false;
@@ -48,11 +65,38 @@ export class TopicsPage implements OnInit {
   }
 
   async fetchTopics() {
-    const querySnapshot = await getDocs(collection(db, 'topics'));
-    cachedRows = querySnapshot.docs.map((doc) => {
+    const [topicsSnap, relevanceSnap] = await Promise.all([
+      getDocs(collection(db, 'topics')),
+      getDocs(collection(db, 'relevance')),
+    ]);
+
+    const recordsByTopic: Record<string, any[]> = {};
+    for (const d of relevanceSnap.docs) {
+      const data = d.data() as any;
+      if (!data['topic']) continue;
+      (recordsByTopic[data['topic']] ||= []).push(data);
+    }
+
+    cachedRows = topicsSnap.docs.map((doc) => {
       const data = doc.data() as any;
       const insertTime = data['insert_time']?.toDate?.();
       const modifiedTime = data['modified_time']?.toDate?.();
+
+      const series = seriesFor(recordsByTopic[doc.id] ?? []);
+      const hasData = series.some((v) => v > 0);
+      let avg = 0;
+      let peak = 0;
+      let peakYear = 0;
+      if (hasData) {
+        let peakIndex = 0;
+        series.forEach((v, i) => {
+          if (v > series[peakIndex]) peakIndex = i;
+        });
+        avg = series.reduce((sum, v) => sum + v, 0) / series.length;
+        peak = series[peakIndex];
+        peakYear = FIRST_YEAR + peakIndex;
+      }
+
       return {
         id: doc.id,
         title: topicTitle(doc.id),
@@ -62,6 +106,13 @@ export class TopicsPage implements OnInit {
         insertMs: insertTime ? insertTime.getTime() : 0,
         modifiedMs: modifiedTime ? modifiedTime.getTime() : 0,
         runs: data['runs'] ?? 0,
+        hasData,
+        avg,
+        peak,
+        peakYear,
+        avgDisplay: hasData ? `${Math.round(avg * 100)}%` : '—',
+        peakDisplay: hasData ? `${Math.round(peak * 100)}%` : '—',
+        peakYearDisplay: hasData ? `${peakYear}` : '—',
       };
     });
     this.topics = cachedRows;
@@ -88,7 +139,10 @@ export class TopicsPage implements OnInit {
   private applySort() {
     const dir = this.sortAsc ? 1 : -1;
     const field = this.sortField;
+    const isStat = field === 'avg' || field === 'peak' || field === 'peakYear';
     this.topics = [...this.topics].sort((a, b) => {
+      // Topics with no relevance data sort last on stat columns either way.
+      if (isStat && a.hasData !== b.hasData) return a.hasData ? -1 : 1;
       const av = a[field];
       const bv = b[field];
       if (typeof av === 'string' && typeof bv === 'string') {
@@ -96,6 +150,14 @@ export class TopicsPage implements OnInit {
       }
       return ((av as number) - (bv as number)) * dir;
     });
+    this.updateView();
+  }
+
+  updateView() {
+    const query = this.searchQuery.trim().toLowerCase();
+    this.view = query
+      ? this.topics.filter((t) => t.title.toLowerCase().includes(query))
+      : this.topics;
   }
 
   arrowFor(field: SortField): string {
