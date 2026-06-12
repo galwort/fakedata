@@ -1,11 +1,11 @@
 <ion-content>
-  <div class="fd-page">
+  <div class="fd-page" *ngIf="loaded">
     <header class="page-head">
       <p class="fd-kicker">The Archive</p>
       <h1 class="fd-headline headline">Every topic</h1>
       <p class="fd-dek">
         {{ topics.length }} topic{{ topics.length === 1 ? '' : 's' }} scored by
-        a large language model.
+        AI.
       </p>
     </header>
 

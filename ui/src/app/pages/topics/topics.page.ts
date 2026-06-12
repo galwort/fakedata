@@ -28,6 +28,7 @@ interface TopicRow {
 })
 export class TopicsPage implements OnInit {
   topics: TopicRow[] = [];
+  loaded = false;
   sortField: SortField = 'modifiedMs';
   sortAsc = false;
 
@@ -55,6 +56,7 @@ export class TopicsPage implements OnInit {
       };
     });
     this.applySort();
+    this.loaded = true;
   }
 
   private formatDate(date?: Date): string {

@@ -54,7 +54,7 @@ export class OnPage implements OnInit {
   @ViewChild(IonContent) content?: IonContent;
 
   topic = '';
-  topic_title = 'nothing... yet';
+  topic_title = '';
   records: any[] = [];
   chart: any;
   color = '#1a1a1a';

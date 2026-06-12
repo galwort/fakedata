@@ -41,7 +41,7 @@ export class HomePage implements OnInit, OnDestroy {
   cards: TopicCard[] = [];
   rotation: string[] = [];
   rotationIndex = 0;
-  currentTopic = 'nothing... yet';
+  currentTopic = '';
   accent = 'var(--fd-gold)';
   fading = false;
   private timer: any;
