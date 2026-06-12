@@ -40,6 +40,28 @@
         '' }}AN OVERCONFIDENT LANGUAGE MODEL
       </p>
     </section>
+
+    <section class="similar" *ngIf="similar.length">
+      <div class="section-head">
+        <h2>Similar trends</h2>
+      </div>
+      <div class="grid">
+        <fd-topic-card
+          *ngFor="let s of similar"
+          [style.--c]="s.color"
+          [title]="s.title"
+          [points]="s.points"
+          [endX]="s.endX"
+          [endY]="s.endY"
+          [meta]="s.meta"
+          (click)="open(s.id)"
+        ></fd-topic-card>
+      </div>
+      <p class="method">
+        METHODOLOGY: PEARSON CORRELATION AGAINST A SAMPLE OF OTHER TOPICS. WE
+        SAID SIMILAR, NOT MEANINGFUL.
+      </p>
+    </section>
   </article>
 
   <fd-footer></fd-footer>

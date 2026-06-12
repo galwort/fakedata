@@ -7,6 +7,7 @@ import { HomePage } from './home.page';
 import { HomePageRoutingModule } from './home-routing.module';
 import { SparkleComponent } from 'src/app/shared/sparkle.component';
 import { FooterComponent } from 'src/app/shared/footer.component';
+import { TopicCardComponent } from 'src/app/shared/topic-card.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { FooterComponent } from 'src/app/shared/footer.component';
     HomePageRoutingModule,
     SparkleComponent,
     FooterComponent,
+    TopicCardComponent,
   ],
   declarations: [HomePage],
 })

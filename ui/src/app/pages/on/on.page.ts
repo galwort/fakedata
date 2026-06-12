@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { IonContent } from '@ionic/angular';
 import { getApp, getApps, initializeApp } from 'firebase/app';
 import {
   getFirestore,
@@ -9,17 +10,40 @@ import {
   getDocs,
   getDoc,
   doc,
+  limit,
+  orderBy,
+  startAt,
+  documentId,
 } from 'firebase/firestore';
 import { environment } from 'src/environments/environment';
 import { Chart, registerables } from 'chart.js';
 import { colorFor, topicTitle } from 'src/app/shared/palette';
+import {
+  FIRST_YEAR,
+  LAST_YEAR,
+  seriesFor,
+  sparkline,
+  pearson,
+} from 'src/app/shared/trends';
 
 const app = getApps().length ? getApp() : initializeApp(environment.firebase);
 const db = getFirestore(app);
 
-const FIRST_YEAR = 1980;
-const LAST_YEAR = 2020;
 const MONO = "'Roboto Mono', 'SFMono-Regular', Consolas, monospace";
+// Sample size for the similar-trends comparison and the minimum correlation
+// a topic needs to qualify as "similar".
+const SAMPLE_SIZE = 200;
+const MIN_MATCH = 0.5;
+
+interface SimilarCard {
+  id: string;
+  title: string;
+  color: string;
+  meta: string;
+  points: string;
+  endX: number;
+  endY: number;
+}
 
 @Component({
   selector: 'app-on',
@@ -27,6 +51,8 @@ const MONO = "'Roboto Mono', 'SFMono-Regular', Consolas, monospace";
   styleUrls: ['./on.page.scss'],
 })
 export class OnPage implements OnInit {
+  @ViewChild(IonContent) content?: IonContent;
+
   topic = '';
   topic_title = 'nothing... yet';
   records: any[] = [];
@@ -39,8 +65,10 @@ export class OnPage implements OnInit {
   peakPct = 0;
   latestPct = 0;
   lastYear = LAST_YEAR;
+  similar: SimilarCard[] = [];
+  private currentSeries: number[] = [];
 
-  constructor(private route: ActivatedRoute) {
+  constructor(private route: ActivatedRoute, private router: Router) {
     Chart.register(...registerables);
   }
 
@@ -49,8 +77,13 @@ export class OnPage implements OnInit {
       this.topic = params.get('topic')!;
       this.topic_title = topicTitle(this.topic);
       this.color = colorFor(this.topic);
+      this.similar = [];
+      this.content?.scrollToTop(0);
       this.fetchTopicMeta();
-      this.fetchRecords().then(() => this.initializeChart());
+      this.fetchRecords().then(() => {
+        this.initializeChart();
+        this.fetchSimilar();
+      });
     });
   }
 
@@ -79,10 +112,8 @@ export class OnPage implements OnInit {
       { length: LAST_YEAR - FIRST_YEAR + 1 },
       (_, i) => (FIRST_YEAR + i).toString()
     );
-    const scores = years.map((year) => {
-      const record = this.records.find((r) => r[year] !== undefined);
-      return record ? record[year] : 0;
-    });
+    const scores = seriesFor(this.records);
+    this.currentSeries = scores;
 
     this.computeStats(years, scores);
 
@@ -171,6 +202,76 @@ export class OnPage implements OnInit {
         },
       },
     });
+  }
+
+  // Correlate this topic's curve against a sample of other topics and keep
+  // the closest shapes. A sample keeps reads bounded — the archive holds
+  // thousands of topics, and this is a joke site, not a vector database.
+  async fetchSimilar() {
+    if (!this.hasData) return;
+    const requested = this.topic;
+
+    // Relevance doc ids start with the topic name, so a plain limit() would
+    // always sample the same alphabetical head. Start at a random letter and
+    // top up from the beginning when the window lands near the end.
+    const randomStart = String.fromCharCode(
+      97 + Math.floor(Math.random() * 26)
+    );
+    const sampleSnap = await getDocs(
+      query(
+        collection(db, 'relevance'),
+        orderBy(documentId()),
+        startAt(randomStart),
+        limit(SAMPLE_SIZE)
+      )
+    );
+    let sampleDocs = sampleSnap.docs;
+    if (sampleDocs.length < SAMPLE_SIZE) {
+      const topUpSnap = await getDocs(
+        query(
+          collection(db, 'relevance'),
+          orderBy(documentId()),
+          limit(SAMPLE_SIZE - sampleDocs.length)
+        )
+      );
+      sampleDocs = sampleDocs.concat(topUpSnap.docs);
+    }
+
+    const recordsByTopic: Record<string, any[]> = {};
+    for (const d of sampleDocs) {
+      const data = d.data() as any;
+      const id = data['topic'];
+      if (!id || id === requested) continue;
+      (recordsByTopic[id] ||= []).push(data);
+    }
+
+    const matches = Object.entries(recordsByTopic)
+      .map(([id, records]) => {
+        const series = seriesFor(records);
+        const r = pearson(this.currentSeries, series);
+        return r === null ? null : { id, series, r };
+      })
+      .filter(
+        (m): m is { id: string; series: number[]; r: number } =>
+          m !== null && m.r >= MIN_MATCH
+      )
+      .sort((a, b) => b.r - a.r)
+      .slice(0, 3);
+
+    // A click may have navigated to another topic while we were fetching.
+    if (this.topic !== requested) return;
+
+    this.similar = matches.map((m) => ({
+      id: m.id,
+      title: topicTitle(m.id),
+      color: colorFor(m.id),
+      meta: `r = ${m.r.toFixed(3)}`,
+      ...sparkline(m.series),
+    }));
+  }
+
+  open(topicId: string) {
+    this.router.navigate(['/on', topicId]);
   }
 
   private computeStats(years: string[], scores: number[]) {

@@ -30,22 +30,16 @@
         <a routerLink="/topics">See every topic →</a>
       </div>
       <div class="grid">
-        <article
-          class="card"
+        <fd-topic-card
           *ngFor="let t of cards"
           [style.--c]="t.color"
+          [title]="t.title"
+          [points]="t.points"
+          [endX]="t.endX"
+          [endY]="t.endY"
+          [meta]="t.meta"
           (click)="open(t.id)"
-        >
-          <svg class="sparkline" viewBox="0 0 120 36" aria-hidden="true">
-            <polyline
-              [attr.points]="t.points"
-              vector-effect="non-scaling-stroke"
-            ></polyline>
-            <circle [attr.cx]="t.endX" [attr.cy]="t.endY" r="2.5"></circle>
-          </svg>
-          <h3>{{ t.title }}</h3>
-          <p class="meta">{{ t.meta }}</p>
-        </article>
+        ></fd-topic-card>
       </div>
     </div>
   </section>

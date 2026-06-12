@@ -12,12 +12,11 @@ import {
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import { colorFor, topicTitle } from 'src/app/shared/palette';
+import { seriesFor, sparkline } from 'src/app/shared/trends';
 
 const app = getApps().length ? getApp() : initializeApp(environment.firebase);
 const db = getFirestore(app);
 
-const FIRST_YEAR = 1980;
-const LAST_YEAR = 2020;
 // How many recently-updated topics make the front page. Keep at or below 30,
 // the limit for a Firestore 'in' query.
 const LATEST_COUNT = 12;
@@ -88,9 +87,7 @@ export class HomePage implements OnInit, OnDestroy {
           }/${modified.getDate()}/${modified.getFullYear()}`
         : '';
       const runs = data['runs'] ?? 0;
-      const spark = this.sparkline(
-        this.seriesFor(recordsByTopic[doc.id] ?? [])
-      );
+      const spark = sparkline(seriesFor(recordsByTopic[doc.id] ?? []));
       return {
         id: doc.id,
         title: topicTitle(doc.id),
@@ -105,33 +102,6 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.rotation = this.shuffle(this.cards.map((c) => c.id));
     this.startTopicRotation();
-  }
-
-  private seriesFor(records: any[]): number[] {
-    const series: number[] = [];
-    for (let year = FIRST_YEAR; year <= LAST_YEAR; year++) {
-      const record = records.find((r) => r[year.toString()] !== undefined);
-      series.push(record ? record[year.toString()] : 0);
-    }
-    return series;
-  }
-
-  private sparkline(series: number[]) {
-    const w = 120;
-    const h = 36;
-    const pad = 3;
-    const step = (w - pad * 2) / (series.length - 1);
-    const coords = series.map((v, i) => {
-      const x = pad + i * step;
-      const y = pad + (1 - Math.max(0, Math.min(1, v))) * (h - pad * 2);
-      return [Number(x.toFixed(1)), Number(y.toFixed(1))];
-    });
-    const [endX, endY] = coords[coords.length - 1];
-    return {
-      points: coords.map(([x, y]) => `${x},${y}`).join(' '),
-      endX,
-      endY,
-    };
   }
 
   private shuffle(items: string[]): string[] {

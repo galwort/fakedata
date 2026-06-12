@@ -8,6 +8,7 @@ import { OnPageRoutingModule } from './on-routing.module';
 
 import { OnPage } from './on.page';
 import { FooterComponent } from 'src/app/shared/footer.component';
+import { TopicCardComponent } from 'src/app/shared/topic-card.component';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { FooterComponent } from 'src/app/shared/footer.component';
     IonicModule,
     OnPageRoutingModule,
     FooterComponent,
+    TopicCardComponent,
   ],
   declarations: [OnPage],
 })

@@ -80,6 +80,38 @@
   }
 }
 
+.similar {
+  margin-top: 3rem;
+
+  .section-head {
+    border-bottom: 2px solid var(--fd-ink);
+    padding-bottom: 0.6rem;
+
+    h2 {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .method {
+    margin: 1.25rem 0 0;
+    font-family: var(--fd-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    color: var(--fd-gray-light);
+  }
+}
+
 @media (max-width: 600px) {
   .stats {
     gap: 1.5rem;
