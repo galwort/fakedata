@@ -205,8 +205,8 @@ export class OnPage implements OnInit {
   }
 
   // Correlate this topic's curve against a sample of other topics and keep
-  // the closest shapes. A sample keeps reads bounded — the archive holds
-  // thousands of topics, and this is a joke site, not a vector database.
+  // the closest shapes. A sample keeps Firestore reads bounded — the archive
+  // holds thousands of topics.
   async fetchSimilar() {
     if (!this.hasData) return;
     const requested = this.topic;
