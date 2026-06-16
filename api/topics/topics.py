@@ -2,7 +2,10 @@ from azure.identity import DefaultAzureCredential
 from azure.keyvault.secrets import SecretClient
 from datetime import datetime, timezone
 from firebase_admin import credentials, firestore
+from functools import lru_cache
+from heapq import nlargest
 from json import loads, dumps
+from math import sqrt
 from openai import OpenAI
 from requests import get
 import firebase_admin
@@ -23,6 +26,9 @@ except ValueError:
 db = firestore.client()
 
 news_key = secret_client.get_secret("NewsAPIKey").value
+MATERIAL_ICONS_URL = "https://fonts.google.com/metadata/icons"
+EMBEDDING_MODEL = "text-embedding-3-small"
+ICON_CANDIDATE_COUNT = 12
 
 TOPIC_STYLE_GUIDE = (
     "A topic must be a clean canonical label: a reusable subject someone could "
@@ -40,11 +46,123 @@ def normalize_topic(topic):
     return re.sub(r"-+", "-", topic).strip("-")
 
 
-def normalize_generated_topics(topics, limit):
+def icon_text(icon):
+    return " ".join(
+        [
+            icon["name"].replace("_", " "),
+            " ".join(icon.get("categories") or []),
+            " ".join(icon.get("tags") or []),
+        ]
+    ).strip()
+
+
+def vector_norm(vector):
+    return sqrt(sum(value * value for value in vector))
+
+
+def embed_texts(texts):
+    vectors = []
+    for i in range(0, len(texts), 256):
+        vectors.extend(
+            item.embedding
+            for item in client.embeddings.create(
+                model=EMBEDDING_MODEL, input=texts[i : i + 256]
+            ).data
+        )
+    return vectors
+
+
+@lru_cache(maxsize=1)
+def material_icons():
+    response = get(MATERIAL_ICONS_URL, timeout=30)
+    response.raise_for_status()
+    raw = response.text
+    data = loads(raw[5:] if raw.startswith(")]}'") else raw)
+    return tuple(
+        icon
+        for icon in data["icons"]
+        if icon["name"] != "category"
+        and "Material Icons" not in icon.get("unsupported_families", [])
+    )
+
+
+@lru_cache(maxsize=1)
+def material_icon_vectors():
+    icons = material_icons()
+    vectors = embed_texts([icon_text(icon) for icon in icons])
+    return tuple(
+        (icon, vector, vector_norm(vector))
+        for icon, vector in zip(icons, vectors)
+    )
+
+
+def top_material_icon_candidates(topic, limit=ICON_CANDIDATE_COUNT):
+    query_vector = embed_texts([topic.replace("-", " ")])[0]
+    query_norm = vector_norm(query_vector)
+
+    def score(icon_vector):
+        _, vector, norm = icon_vector
+        if not query_norm or not norm:
+            return 0
+        return sum(a * b for a, b in zip(query_vector, vector)) / (query_norm * norm)
+
+    return [
+        icon
+        for icon, _, _ in nlargest(limit, material_icon_vectors(), key=score)
+    ]
+
+
+def choose_material_icon(topic, model):
+    candidates = top_material_icon_candidates(topic)
+    candidate_names = {icon["name"] for icon in candidates}
+    response = client.chat.completions.create(
+        model=model,
+        response_format={"type": "json_object"},
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "Choose the single best Google Material Icon for the topic. "
+                    "Return JSON with the key 'Material_Icon'. Choose exactly one "
+                    "icon name from candidate_icons."
+                ),
+            },
+            {
+                "role": "user",
+                "content": dumps(
+                    {
+                        "topic": topic.replace("-", " "),
+                        "candidate_icons": [
+                            {
+                                "icon": icon["name"],
+                                "categories": icon.get("categories") or [],
+                                "tags": icon.get("tags") or [],
+                            }
+                            for icon in candidates
+                        ],
+                    }
+                ),
+            },
+        ],
+    )
+    icon = loads(response.choices[0].message.content).get("Material_Icon", "").strip()
+    if icon not in candidate_names:
+        raise ValueError(f"OpenAI selected non-candidate icon: {icon}")
+    return icon
+
+
+def normalize_generated_topics(generated_topics, limit):
     normalized_topics = []
     seen = set()
 
-    for topic in topics:
+    if not isinstance(generated_topics, list):
+        generated_topics = []
+
+    for item in generated_topics:
+        if not isinstance(item, dict):
+            continue
+
+        topic = item.get("topic") or item.get("name") or item.get("label")
         normalized_topic = normalize_topic(str(topic))
         if not normalized_topic or normalized_topic in seen:
             continue
@@ -68,7 +186,7 @@ def gen_topics_from_topics(model, num_topics=3):
         f"{TOPIC_STYLE_GUIDE} "
         "Silently discard any candidate that does not meet this standard. "
         "Reply in JSON format with the key 'new_topics' "
-        "and an array of new topics."
+        "and an array of new topic objects. Each object must have a 'topic' key."
     )
     user_message = {
         "role": "user",
@@ -83,7 +201,7 @@ def gen_topics_from_topics(model, num_topics=3):
     )
 
     json_response = loads(response.choices[0].message.content)
-    return normalize_generated_topics(json_response["new_topics"], num_topics)
+    return normalize_generated_topics(json_response.get("new_topics", []), num_topics)
 
 
 def get_news_topics():
@@ -117,7 +235,7 @@ def gen_topics_from_news(model, num_topics=3):
         "Extract the underlying subject, not the article headline. "
         "Silently discard any candidate that does not meet this standard. "
         "Reply in JSON format with the key 'new_topics' "
-        "and an array of new topics."
+        "and an array of new topic objects. Each object must have a 'topic' key."
     )
     user_message = {
         "role": "user",
@@ -132,10 +250,10 @@ def gen_topics_from_news(model, num_topics=3):
     )
 
     json_response = loads(response.choices[0].message.content)
-    return normalize_generated_topics(json_response["new_topics"], num_topics)
+    return normalize_generated_topics(json_response.get("new_topics", []), num_topics)
 
 
-def update_firestore(topic):
+def update_firestore(topic, model):
     topic = normalize_topic(topic)
     if not topic:
         return False
@@ -146,17 +264,24 @@ def update_firestore(topic):
     current_time = datetime.now(timezone.utc)
 
     if topic_doc.exists:
+        topic_data = topic_doc.to_dict() or {}
+        if not str(topic_data.get("Material_Icon") or "").strip():
+            icon = choose_material_icon(topic, model)
+            topic_ref.update({"Material_Icon": icon})
+            print(f"Topic '{topic}' already exists. Added icon '{icon}'.")
         print(f"Topic '{topic}' already exists in Firestore. Ignoring.")
         return False
 
+    icon = choose_material_icon(topic, model)
     topic_data = {
         "insert_time": current_time,
+        "Material_Icon": icon,
         "modified_time": current_time,
         "runs": 0,
     }
 
     topic_ref.set(topic_data)
-    print(f"Topic '{topic}' has been added to Firestore.")
+    print(f"Topic '{topic}' has been added to Firestore with icon '{icon}'.")
     return True
 
 
@@ -164,9 +289,9 @@ def main():
     model = "gpt-4o"
 
     new_topics = gen_topics_from_topics(model)
-    for topic in new_topics:
-        update_firestore(topic)
+    for topic_data in new_topics:
+        update_firestore(topic_data, model)
 
     news_topics = gen_topics_from_news(model)
-    for topic in news_topics:
-        update_firestore(topic)
+    for topic_data in news_topics:
+        update_firestore(topic_data, model)
