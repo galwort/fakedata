@@ -13,6 +13,7 @@ import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import { colorFor, topicTitle } from 'src/app/shared/palette';
 import { seriesFor, sparkline } from 'src/app/shared/trends';
+import { iconForTopic } from 'src/app/shared/topic-icons';
 
 const app = getApps().length ? getApp() : initializeApp(environment.firebase);
 const db = getFirestore(app);
@@ -24,6 +25,7 @@ const LATEST_COUNT = 12;
 interface TopicCard {
   id: string;
   title: string;
+  icon: string;
   color: string;
   meta: string;
   points: string;
@@ -92,6 +94,7 @@ export class HomePage implements OnInit, OnDestroy {
       return {
         id: doc.id,
         title: topicTitle(doc.id),
+        icon: iconForTopic(doc.id, data),
         color: colorFor(doc.id),
         meta: [updated && `Updated ${updated}`, `${runs} run${runs === 1 ? '' : 's'}`]
           .filter(Boolean)
