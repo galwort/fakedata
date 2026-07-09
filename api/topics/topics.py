@@ -31,14 +31,20 @@ EMBEDDING_MODEL = "text-embedding-3-small"
 ICON_CANDIDATE_COUNT = 12
 
 TOPIC_STYLE_GUIDE = (
-    "A topic must be a clean canonical label: a reusable subject someone could "
-    "browse or compare over time. Good examples: 'baseball', 'dreams', "
-    "'climate change', 'artificial intelligence'. Bad examples: article "
-    "headlines, full claims, essay titles, research questions, or explanatory "
-    "phrases like 'the importance of ...'. Multi-word topics must include spaces between the words; never concatenate them. "
-    "Prefer one or two words; use three or four only when that is the natural name of the subject."
+    "A topic must be a broad, concrete, plain-language subject bucket: "
+    "something someone could browse, search for, or compare over time. "
+    "Good examples: 'baseball', 'coffee', 'climate change', 'legal cases', "
+    "'renewable materials', 'political campaigns', 'artificial intelligence'. "
+    "Bad examples: article headlines, full claims, essay titles, research "
+    "questions, academic subfields, speculative combinations, or explanatory "
+    "phrases like 'the importance of ...', 'ethical implications of ...', "
+    "'history of ...', or 'cross-cultural ...'. Do not use abstract modifier "
+    "families such as universal, timeless, philosophical, ethical, cognitive, "
+    "cultural, historical, evolutionary, quantum, neuroscience, or ancient. "
+    "Multi-word topics must include spaces between the words; never concatenate "
+    "them. Prefer one or two words; use three only when that is the natural "
+    "name of the subject."
 )
-
 
 def normalize_topic(topic):
     topic = topic.strip().lower()
@@ -184,6 +190,8 @@ def gen_topics_from_topics(model, num_topics=3):
         f"You are tasked to generate {num_candidates} candidate topics "
         "given a list of existing topics. "
         f"{TOPIC_STYLE_GUIDE} "
+        "Do not create new topics by adding academic modifiers or abstract "
+        "qualifiers to existing topics. "
         "Silently discard any candidate that does not meet this standard. "
         "Reply in JSON format with the key 'new_topics' "
         "and an array of new topic objects. Each object must have a 'topic' key."
@@ -228,9 +236,8 @@ def gen_topics_from_news(model, num_topics=3):
     system_message = (
         f"You are tasked to generate {num_candidates} candidate topics "
         "given a list of news articles. These topics should cover "
-        "a wide range of areas and be relevant to various fields "
-        "over time, and not just relevant to today. They should be "
-        "universally relevant and timeless. "
+        "a wide range of concrete subject areas. They should be broad enough "
+        "to track over time, and not just relevant to today's headline. "
         f"{TOPIC_STYLE_GUIDE} "
         "Extract the underlying subject, not the article headline. "
         "Silently discard any candidate that does not meet this standard. "
