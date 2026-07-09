@@ -52,7 +52,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend
-          path: frontend
+          path: ui/www
       
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -60,7 +60,7 @@ jobs:
         with:
           app-name: 'fake'
           slot-name: 'Production'
-          package: ./frontend
+          package: ./ui/www
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FEEC4714E9DD4685B9AF7BBEFF40F87F }}
 
   deploy-api:
@@ -76,6 +76,15 @@ jobs:
           name: api
           path: api
 
+      - name: Check API publish profile secret
+        env:
+          AZURE_FUNCTIONAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+        run: |
+          if [ -z "$AZURE_FUNCTIONAPP_PUBLISH_PROFILE" ]; then
+            echo "::error::Missing AZURE_FUNCTIONAPP_PUBLISH_PROFILE secret for Function App fa-fakedata."
+            exit 1
+          fi
+
       - name: 'Deploy to Azure Function App'
         id: deploy-to-functionapp
         uses: Azure/functions-action@v1
@@ -83,5 +92,6 @@ jobs:
           app-name: 'fa-fakedata'
           package: ./api
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          respect-funcignore: true
           scm-do-build-during-deployment: true
           enable-oryx-build: true
