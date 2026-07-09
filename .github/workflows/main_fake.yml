@@ -53,6 +53,55 @@ jobs:
         with:
           name: frontend
           path: ui/www
+
+      - name: Disable frontend remote build
+        env:
+          AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FEEC4714E9DD4685B9AF7BBEFF40F87F }}
+        run: |
+          python - <<'PY'
+          import base64
+          import json
+          import os
+          import urllib.request
+          import xml.etree.ElementTree as ET
+          from urllib.parse import urlsplit
+
+          root = ET.fromstring(os.environ["AZURE_WEBAPP_PUBLISH_PROFILE"])
+          profiles = [
+              profile
+              for profile in root.findall(".//publishProfile")
+              if ".scm." in (profile.get("publishUrl") or "")
+              and profile.get("userName")
+              and profile.get("userPWD")
+          ]
+          if not profiles:
+              raise SystemExit("No SCM publish profile found for frontend app")
+
+          profile = profiles[0]
+          publish_url = profile.get("publishUrl")
+          parsed = urlsplit(
+              publish_url if publish_url.startswith("http") else f"https://{publish_url}"
+          )
+          api_url = f"{parsed.scheme}://{parsed.netloc}/api/settings"
+          auth = base64.b64encode(
+              f"{profile.get('userName')}:{profile.get('userPWD')}".encode()
+          ).decode()
+          request = urllib.request.Request(
+              api_url,
+              data=json.dumps({"SCM_DO_BUILD_DURING_DEPLOYMENT": "false"}).encode(),
+              headers={
+                  "Authorization": f"Basic {auth}",
+                  "Content-Type": "application/json",
+              },
+              method="POST",
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              if response.status not in (200, 204):
+                  raise SystemExit(
+                      f"Unexpected Kudu settings response: {response.status}"
+                  )
+          print("Disabled Kudu remote build for frontend ZIP deploy.")
+          PY
       
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
