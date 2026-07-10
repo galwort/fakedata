@@ -39,10 +39,10 @@ let nextTopicIconId = 0;
         [attr.filter]="filterUrl(filterId)"
         d="M15.5 15.3C24.8 5.9 42.4 5.4 50.9 15.2c9 10.4 3.7 29.1-8.6 35.9-12.9 7.1-29.5 1.2-35-10.3-4.5-9.4 1.3-18.3 8.2-25.5z"
       ></path>
-      <text class="glyph glyph-fill" x="32" y="34" [attr.filter]="filterUrl(filterId)">
+      <text class="glyph glyph-fill" x="32" y="34">
         {{ displayIcon }}
       </text>
-      <text class="glyph glyph-line" x="32" y="34" [attr.filter]="filterUrl(filterId)">
+      <text class="glyph glyph-line" x="32" y="34">
         {{ displayIcon }}
       </text>
     </svg>
