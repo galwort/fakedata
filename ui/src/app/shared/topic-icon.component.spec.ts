@@ -18,13 +18,24 @@ describe('TopicIconComponent', () => {
 
   it('renders the Material Symbols ligature as HTML outside the SVG', () => {
     component.icon = 'energy_savings_leaf';
+    component.label = 'Renewable energy';
     fixture.detectChanges();
 
     const host = fixture.nativeElement as HTMLElement;
-    const glyph = host.querySelector('.glyph');
+    const glyphs = Array.from(host.querySelectorAll('.glyph'));
+    const icon = host.querySelector('.glyph-stack');
 
-    expect(glyph?.namespaceURI).toBe('http://www.w3.org/1999/xhtml');
-    expect(glyph?.textContent?.trim()).toBe('energy_savings_leaf');
+    expect(glyphs.length).toBe(2);
+    expect(host.querySelector('.glyph-fill')).toBeTruthy();
+    expect(host.querySelector('.glyph-line')).toBeTruthy();
+    for (const glyph of glyphs) {
+      expect(glyph.namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+      expect(glyph.textContent?.trim()).toBe('energy_savings_leaf');
+      expect(glyph.getAttribute('aria-hidden')).toBe('true');
+    }
+    expect(icon?.getAttribute('role')).toBe('img');
+    expect(icon?.getAttribute('aria-label')).toBe('Renewable energy');
+    expect(host.querySelectorAll('[role="img"]').length).toBe(1);
     expect(host.querySelector('svg text')).toBeNull();
   });
 
@@ -32,7 +43,15 @@ describe('TopicIconComponent', () => {
     component.icon = '   ';
     fixture.detectChanges();
 
-    const glyph = fixture.nativeElement.querySelector('.glyph') as HTMLElement;
-    expect(glyph.textContent?.trim()).toBe(DEFAULT_TOPIC_ICON);
+    const glyphs = fixture.nativeElement.querySelectorAll('.glyph');
+    expect(glyphs.length).toBe(2);
+    for (const glyph of Array.from(glyphs) as HTMLElement[]) {
+      expect(glyph.textContent?.trim()).toBe(DEFAULT_TOPIC_ICON);
+    }
+    expect(
+      fixture.nativeElement
+        .querySelector('.glyph-stack')
+        .getAttribute('aria-hidden')
+    ).toBe('true');
   });
 });

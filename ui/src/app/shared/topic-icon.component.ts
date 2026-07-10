@@ -41,13 +41,23 @@ let nextTopicIconId = 0;
     </svg>
     <!-- WebKit mismeasures icon-font ligatures inside SVG: bugs.webkit.org/215321. -->
     <span
-      class="glyph material-symbols-outlined"
+      class="glyph-stack"
       [style.color]="color"
       [attr.aria-label]="label || null"
       [attr.aria-hidden]="label ? null : 'true'"
       role="img"
-      >{{ displayIcon }}</span
     >
+      <span
+        class="glyph glyph-fill material-symbols-outlined"
+        aria-hidden="true"
+        >{{ displayIcon }}</span
+      >
+      <span
+        class="glyph glyph-line material-symbols-outlined"
+        aria-hidden="true"
+        >{{ displayIcon }}</span
+      >
+    </span>
   `,
   styles: [
     `
@@ -60,7 +70,7 @@ let nextTopicIconId = 0;
       }
 
       .topic-icon-wash,
-      .glyph {
+      .glyph-stack {
         grid-area: 1 / 1;
       }
 
@@ -76,17 +86,24 @@ let nextTopicIconId = 0;
         opacity: 0.74;
       }
 
-      .glyph {
+      .glyph-stack {
         display: grid;
         width: 100%;
         height: 100%;
+        font-size: var(--topic-icon-size, 3rem);
+        transform: translateY(3.125%);
+      }
+
+      .glyph {
+        grid-area: 1 / 1;
+        display: grid;
         place-items: center;
         overflow: hidden;
         font-family: 'Material Symbols Outlined', 'Material Icons';
         -webkit-font-feature-settings: 'liga';
         font-feature-settings: 'liga';
         font-variation-settings: 'FILL' 1, 'wght' 650, 'GRAD' 0, 'opsz' 48;
-        font-size: 34px;
+        font-size: 53.125%;
         font-style: normal;
         font-weight: normal;
         line-height: 1;
@@ -96,7 +113,17 @@ let nextTopicIconId = 0;
         direction: ltr;
         text-rendering: optimizeLegibility;
         -webkit-font-smoothing: antialiased;
-        -webkit-text-stroke: 0.7px var(--fd-ink);
+      }
+
+      .glyph-fill {
+        -webkit-text-stroke: 0.0071em var(--fd-ink);
+        paint-order: stroke fill;
+      }
+
+      .glyph-line {
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+        -webkit-text-stroke: 0.0397em var(--fd-ink);
         paint-order: stroke fill;
       }
 
