@@ -8,12 +8,11 @@ let nextTopicIconId = 0;
   standalone: true,
   template: `
     <svg
-      class="topic-icon-svg"
+      class="topic-icon-wash"
       viewBox="0 0 64 64"
       [style.color]="color"
-      [attr.aria-label]="label || null"
-      [attr.aria-hidden]="label ? null : 'true'"
-      role="img"
+      aria-hidden="true"
+      focusable="false"
     >
       <defs>
         <filter [attr.id]="filterId" x="-18%" y="-18%" width="136%" height="136%">
@@ -39,13 +38,16 @@ let nextTopicIconId = 0;
         [attr.filter]="filterUrl(filterId)"
         d="M15.5 15.3C24.8 5.9 42.4 5.4 50.9 15.2c9 10.4 3.7 29.1-8.6 35.9-12.9 7.1-29.5 1.2-35-10.3-4.5-9.4 1.3-18.3 8.2-25.5z"
       ></path>
-      <text class="glyph glyph-fill" x="32" y="34">
-        {{ displayIcon }}
-      </text>
-      <text class="glyph glyph-line" x="32" y="34">
-        {{ displayIcon }}
-      </text>
     </svg>
+    <!-- WebKit mismeasures icon-font ligatures inside SVG: bugs.webkit.org/215321. -->
+    <span
+      class="glyph material-symbols-outlined"
+      [style.color]="color"
+      [attr.aria-label]="label || null"
+      [attr.aria-hidden]="label ? null : 'true'"
+      role="img"
+      >{{ displayIcon }}</span
+    >
   `,
   styles: [
     `
@@ -57,7 +59,12 @@ let nextTopicIconId = 0;
         flex: 0 0 auto;
       }
 
-      .topic-icon-svg {
+      .topic-icon-wash,
+      .glyph {
+        grid-area: 1 / 1;
+      }
+
+      .topic-icon-wash {
         display: block;
         width: 100%;
         height: 100%;
@@ -70,27 +77,27 @@ let nextTopicIconId = 0;
       }
 
       .glyph {
+        display: grid;
+        width: 100%;
+        height: 100%;
+        place-items: center;
+        overflow: hidden;
         font-family: 'Material Symbols Outlined', 'Material Icons';
+        -webkit-font-feature-settings: 'liga';
         font-feature-settings: 'liga';
         font-variation-settings: 'FILL' 1, 'wght' 650, 'GRAD' 0, 'opsz' 48;
         font-size: 34px;
-        text-anchor: middle;
-        dominant-baseline: central;
-      }
-
-      .glyph-fill {
-        fill: currentColor;
-        stroke: var(--fd-ink);
-        stroke-width: 0.24px;
+        font-style: normal;
+        font-weight: normal;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        white-space: nowrap;
+        direction: ltr;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -webkit-text-stroke: 0.7px var(--fd-ink);
         paint-order: stroke fill;
-      }
-
-      .glyph-line {
-        fill: none;
-        stroke: var(--fd-ink);
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        stroke-width: 1.35px;
       }
 
     `,
